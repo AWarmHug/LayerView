@@ -1,5 +1,6 @@
 package com.warm.layerview;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -11,6 +12,7 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.Build;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
@@ -25,8 +27,14 @@ import android.widget.FrameLayout;
 
 public class LayerView extends View implements ViewTreeObserver.OnGlobalLayoutListener {
     private static final String TAG = "LayerView";
+
+
+    private Context mContext;
+    private Activity mActivity;
     private ViewGroup parent;
-    private View showView;
+    private View cView;
+    private int layerColor = Color.parseColor("#75000000");
+    private int textColor = Color.WHITE;
 
 
     //绘制外部的画笔
@@ -35,9 +43,9 @@ public class LayerView extends View implements ViewTreeObserver.OnGlobalLayoutLi
     //绘制按钮和文字的笔
     private Paint btPaint;
 
-
     private Rect cRectF = new Rect();
 
+    private boolean showing;
 
     /**
      * 控件宽高
@@ -49,33 +57,34 @@ public class LayerView extends View implements ViewTreeObserver.OnGlobalLayoutLi
     protected int mWidth, mHeight;
 
 
-    public LayerView(Context context) {
-        this(context, null);
+    private LayerView(Context context, Builder builder) {
+        this(context, null, builder);
     }
 
-    public LayerView(Context context, AttributeSet attrs) {
-        this(context, attrs, 0);
+    private LayerView(Context context, AttributeSet attrs, Builder builder) {
+        this(context, attrs, 0, builder);
     }
 
-    public LayerView(Context context, AttributeSet attrs, int defStyleAttr) {
+    private LayerView(Context context, AttributeSet attrs, int defStyleAttr, Builder builder) {
         super(context, attrs, defStyleAttr);
+        this.cView = builder.cView;
+        this.mActivity = (Activity) builder.mContext;
+
+        this.layerColor = builder.layerColor;
+        this.textColor = builder.textColor;
+        if (builder.cRect != null) {
+            this.cRectF = builder.cRect;
+        }
         init(context, attrs, defStyleAttr);
     }
 
+
     private void init(Context context, AttributeSet attrs, int defStyleAttr) {
         bgPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-//        bgPaint.setAlpha(155);
         btPaint = new Paint();
-        btPaint.setColor(Color.WHITE);
+        btPaint.setColor(textColor);
         btPaint.setAntiAlias(true);
         btPaint.setStyle(Paint.Style.STROKE);
-
-    }
-
-    public void setView(View view) {
-        this.showView = view;
-        showView.getViewTreeObserver().addOnGlobalLayoutListener(this);
-
     }
 
 
@@ -140,35 +149,11 @@ public class LayerView extends View implements ViewTreeObserver.OnGlobalLayoutLi
         if (parent != null) {
 
 //            drawBack1(canvas);
-
             drawBack2(canvas);
             drawButton(canvas);
-
-
-
         }
     }
 
-    /**
-     * 绘制按钮
-     *
-     * @param canvas
-     */
-    private void drawButton(Canvas canvas) {
-        int length = 100;
-        int wide = 200;
-        RectF rectF = new RectF((mWidth - wide) / 2,  (mHeight * (2f / 3)), (mWidth + wide) / 2,(mHeight * (2f / 3)) + length);
-
-        canvas.drawRoundRect(rectF,10,10, btPaint);
-
-        btPaint.setTextSize(40);
-        btPaint.setTextAlign(Paint.Align.CENTER);
-        Paint.FontMetrics fontMetrics = btPaint.getFontMetrics();
-        float top = fontMetrics.top;//为基线到字体上边框的距离,即上图中的top
-        float bottom = fontMetrics.bottom;//为基线到字体下边框的距离,即上图中的bottom
-        int baseLineY = (int) (rectF.centerY() - top/2 - bottom/2);//基线中间点的y轴计算公式
-        canvas.drawText("朕知道了",rectF.centerX(),baseLineY,btPaint);
-    }
 
     private void drawBack2(Canvas canvas) {
         //设置背景色
@@ -176,18 +161,15 @@ public class LayerView extends View implements ViewTreeObserver.OnGlobalLayoutLi
         int canvasWidth = canvas.getWidth();
         int canvasHeight = canvas.getHeight();
         int layerId = canvas.saveLayer(0, 0, canvasWidth, canvasHeight, null, Canvas.ALL_SAVE_FLAG);
-        //正常绘制黄色的圆形
-        bgPaint.setColor(Color.parseColor("#75000000"));
+        bgPaint.setColor(layerColor);
         RectF rectF = new RectF();
         rectF.left = 0;
         rectF.top = 0;
         rectF.right = mWidth;
         rectF.bottom = mHeight;
         canvas.drawRect(rectF, bgPaint);
-        //使用CLEAR作为PorterDuffXfermode绘制蓝色的矩形
         bgPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_OUT));
         bgPaint.setColor(Color.TRANSPARENT);
-
         canvas.drawRect(cRectF, bgPaint);
         //最后将画笔去除Xfermode
         bgPaint.setXfermode(null);
@@ -212,78 +194,122 @@ public class LayerView extends View implements ViewTreeObserver.OnGlobalLayoutLi
         cRectF.right = 200;
         cRectF.bottom = 200;
         mCanvas.drawRect(cRectF, cPaint);
-
         canvas.drawBitmap(bgBitmap, 0, 0, bgPaint);
     }
 
-    /**
-     * @param view
-     * @return
-     */
-    private ViewGroup findSuitableParent(View view) {
-        ViewGroup fallback = null;
-        do {
-            if (view instanceof FrameLayout) {
-                if (view.getId() == android.R.id.content) {
-                    // If we've hit the decor content view, then we didn't find a CoL in the
-                    // hierarchy, so use it.
-                    return (ViewGroup) view;
-                } else {
-                    // It's not the content view but we'll use it as our fallback
-                    fallback = (ViewGroup) view;
-                }
-            }
-
-            if (view != null) {
-                // Else, we will loop and crawl up the view hierarchy and try to find a parent
-                final ViewParent parent = view.getParent();
-                view = parent instanceof View ? (View) parent : null;
-            }
-        } while (view != null);
-
-        // If we reach here then we didn't find a CoL or a suitable content view so we'll fallback
-        return fallback;
-    }
 
     /**
-     * @return statuBar高度
+     * 绘制按钮
+     *
+     * @param canvas
      */
-    public int getBarHeight() {
+    private void drawButton(Canvas canvas) {
+        int length = 100;
+        int wide = 200;
+        RectF rectF = new RectF((mWidth - wide) / 2, (mHeight * (2f / 3)), (mWidth + wide) / 2, (mHeight * (2f / 3)) + length);
 
-        /**
-         * 获取状态栏高度——方法1
-         * */
-        int statusBarHeight = 0;
-        //获取status_bar_height资源的ID
-        int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
-        if (resourceId > 0) {
-            //根据资源ID获取响应的尺寸值
-            statusBarHeight = getResources().getDimensionPixelSize(resourceId);
-        }
+        canvas.drawRoundRect(rectF, 10, 10, btPaint);
 
-        return statusBarHeight;
+        btPaint.setTextSize(40);
+        btPaint.setTextAlign(Paint.Align.CENTER);
+
+        canvas.drawText("提示操作", rectF.centerX(), cRectF.bottom + 100, btPaint);
+
+
+        Paint.FontMetrics fontMetrics = btPaint.getFontMetrics();
+        float top = fontMetrics.top;//为基线到字体上边框的距离,即上图中的top
+        float bottom = fontMetrics.bottom;//为基线到字体下边框的距离,即上图中的bottom
+        int baseLineY = (int) (rectF.centerY() - top / 2 - bottom / 2);//基线中间点的y轴计算公式
+        canvas.drawText("朕知道了", rectF.centerX(), baseLineY, btPaint);
     }
 
 
     @Override
     public void onGlobalLayout() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            showView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+            cView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
         } else {
-            showView.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+            cView.getViewTreeObserver().removeGlobalOnLayoutListener(this);
         }
         int[] location = new int[2];
 
-        showView.getLocationInWindow(location);
+        cView.getLocationInWindow(location);
 
         cRectF.left = location[0];
-        cRectF.top = location[1] - getBarHeight();
-        cRectF.right = cRectF.left + showView.getWidth();
-        cRectF.bottom = cRectF.top + showView.getHeight();
+        cRectF.top = location[1];
+        cRectF.right = cRectF.left + cView.getWidth();
+        cRectF.bottom = cRectF.top + cView.getHeight();
 
-        this.parent = findSuitableParent(showView);
+//        this.parent = findSuitableParent(cView);
+        this.parent = (FrameLayout) mActivity.getWindow().getDecorView();
 
+        show();
+        Log.d(TAG, "onGlobalLayout: ");
+    }
+
+    public void initshow() {
+        cView.getViewTreeObserver().addOnGlobalLayoutListener(this);
+
+    }
+
+    public void show() {
         if (parent != null)
             parent.addView(this);
+
+        showing = true;
+
     }
+
+    public void dismiss() {
+        if (parent != null)
+            parent.removeView(this);
+
+        showing = false;
+    }
+
+    public boolean isShow() {
+        return showing;
+
+    }
+
+    public static class Builder {
+        private Context mContext;
+        private int layerColor;
+        private int textColor;
+        private View cView;
+
+        private Rect cRect;
+
+        public Builder(Context mContext) {
+            this.mContext = mContext;
+        }
+
+        public Builder setLayerColor(int color) {
+            this.layerColor = color;
+            return this;
+        }
+
+        public Builder setTextColor(int color) {
+            this.textColor = color;
+            return this;
+        }
+
+        public Builder setContent(View view) {
+            this.cView = view;
+            return this;
+        }
+
+        public Builder setContent(Rect cRect) {
+            this.cRect = cRect;
+            return this;
+        }
+
+        public LayerView build() {
+            LayerView layerView = new LayerView(mContext, this);
+            layerView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            return layerView;
+        }
+    }
+
+
 }

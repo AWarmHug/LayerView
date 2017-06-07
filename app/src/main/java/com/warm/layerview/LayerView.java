@@ -146,8 +146,8 @@ public class LayerView extends View implements ViewTreeObserver.OnGlobalLayoutLi
 
         if (parent != null) {
             //绘制有两种方法。
-            drawBack1(canvas);
 //            drawBack2(canvas);
+            drawBack1(canvas);
             drawButton(canvas);
         }
     }
@@ -160,7 +160,7 @@ public class LayerView extends View implements ViewTreeObserver.OnGlobalLayoutLi
      *
      * @param canvas
      */
-    private void drawBack2(Canvas canvas) {
+    private void drawBack1(Canvas canvas) {
         //设置背景色
 //            canvas.drawColor();
         int canvasWidth = canvas.getWidth();
@@ -186,7 +186,7 @@ public class LayerView extends View implements ViewTreeObserver.OnGlobalLayoutLi
      * 需要生成一个bitmap,浪费内存，不推荐。
      * @param canvas
      */
-    private void drawBack1(Canvas canvas) {
+    private void drawBack2(Canvas canvas) {
         bgBitmap = Bitmap.createBitmap(canvas.getWidth(), canvas.getHeight(), Bitmap.Config.ARGB_8888);
         bgPaint.setColor(layerColor);
         mCanvas = new Canvas(bgBitmap);

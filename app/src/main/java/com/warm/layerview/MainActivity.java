@@ -25,10 +25,10 @@ public class MainActivity extends AppCompatActivity {
         tv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                MyFragment myFragment=new MyFragment();
+                MyFragment myFragment = new MyFragment();
                 getSupportFragmentManager().beginTransaction()
-                        .setCustomAnimations(android.R.anim.slide_in_left,0,0,android.R.anim.slide_out_right)
-                        .add(R.id.activity_main,myFragment)
+                        .setCustomAnimations(android.R.anim.slide_in_left, 0, 0, android.R.anim.slide_out_right)
+                        .add(R.id.activity_main, myFragment)
                         .show(myFragment)
                         .addToBackStack(null)
                         .commit();
@@ -40,8 +40,11 @@ public class MainActivity extends AppCompatActivity {
         rv.setAdapter(new RvAdapter());
         rv.setLayoutManager(new LinearLayoutManager(this));
 
+
+
+
         //推荐先弹一个弹框询问是否需要看。
-        AlertDialog dialog=new AlertDialog.Builder(this)
+        AlertDialog dialog = new AlertDialog.Builder(this)
                 .setTitle("提示")
                 .setMessage("我们增加了一些新功能，欢迎查看！")
                 .setPositiveButton("好的", new DialogInterface.OnClickListener() {
@@ -50,8 +53,8 @@ public class MainActivity extends AppCompatActivity {
                         layerView = new LayerView.Builder(MainActivity.this)
                                 .setLayerColor(Color.parseColor("#75000000"))
                                 .setTextColor(Color.WHITE)
-//                .setContent(rv.getLayoutManager().findViewByPosition(0))
-                                .setContent(tv)
+                                .setContent(rv.getLayoutManager().findViewByPosition(0))
+//                                .setContent(tv)
                                 .build();
                         layerView.initshow();
                         layerView.setOnClickListener(new View.OnClickListener() {
@@ -62,14 +65,30 @@ public class MainActivity extends AppCompatActivity {
                         });
                     }
                 })
-                .setNegativeButton("不用",null)
+                .setNegativeButton("不用", null)
                 .create();
         dialog.show();
 
     }
-
-    @Override
-    public void onWindowFocusChanged(boolean hasFocus) {
-        super.onWindowFocusChanged(hasFocus);
-    }
+//    private boolean show;
+//    @Override
+//    public void onWindowFocusChanged(boolean hasFocus) {
+//        super.onWindowFocusChanged(hasFocus);
+//        if (hasFocus&&!show){
+//            show=true;
+//            layerView = new LayerView.Builder(MainActivity.this)
+//                    .setLayerColor(Color.parseColor("#75000000"))
+//                    .setTextColor(Color.WHITE)
+////                .setContent(rv.getLayoutManager().findViewByPosition(0))
+//                    .setContent(tv)
+//                    .build();
+//            layerView.initshow();
+//            layerView.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    layerView.dismiss();
+//                }
+//            });
+//        }
+//    }
 }

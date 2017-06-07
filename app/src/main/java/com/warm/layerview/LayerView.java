@@ -15,7 +15,6 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewParent;
 import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 
@@ -69,7 +68,6 @@ public class LayerView extends View implements ViewTreeObserver.OnGlobalLayoutLi
         super(context, attrs, defStyleAttr);
         this.cView = builder.cView;
         this.mActivity = (Activity) builder.mContext;
-
         this.layerColor = builder.layerColor;
         this.textColor = builder.textColor;
         if (builder.cRect != null) {
@@ -147,14 +145,21 @@ public class LayerView extends View implements ViewTreeObserver.OnGlobalLayoutLi
         super.onDraw(canvas);
 
         if (parent != null) {
-
-//            drawBack1(canvas);
-            drawBack2(canvas);
+            //绘制有两种方法。
+            drawBack1(canvas);
+//            drawBack2(canvas);
             drawButton(canvas);
         }
     }
 
-
+    /**
+     * 通过设置两层，来实现
+     * 这里 {@link Canvas#saveLayer(RectF, Paint, int)}来先保存浮层
+     * {@link Canvas#restoreToCount(int)} 恢复浮层，也就是把两层合并。
+     * 这两个操作很重要。如果没有这两个操作，颜色会发生变化，具体可以注释了自己看看。
+     *
+     * @param canvas
+     */
     private void drawBack2(Canvas canvas) {
         //设置背景色
 //            canvas.drawColor();
@@ -176,8 +181,14 @@ public class LayerView extends View implements ViewTreeObserver.OnGlobalLayoutLi
         canvas.restoreToCount(layerId);
     }
 
+    /**
+     * 先生额外生成一个canvas,在这个canvas中绘制背景，透明块，
+     * 需要生成一个bitmap,浪费内存，不推荐。
+     * @param canvas
+     */
     private void drawBack1(Canvas canvas) {
         bgBitmap = Bitmap.createBitmap(canvas.getWidth(), canvas.getHeight(), Bitmap.Config.ARGB_8888);
+        bgPaint.setColor(layerColor);
         mCanvas = new Canvas(bgBitmap);
         RectF rectF = new RectF();
         rectF.left = 0;
@@ -189,15 +200,9 @@ public class LayerView extends View implements ViewTreeObserver.OnGlobalLayoutLi
         cPaint.setColor(Color.TRANSPARENT);
         cPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_OUT));
         cPaint.setAntiAlias(true);
-        cRectF.left = 0;
-        cRectF.top = 0;
-        cRectF.right = 200;
-        cRectF.bottom = 200;
         mCanvas.drawRect(cRectF, cPaint);
         canvas.drawBitmap(bgBitmap, 0, 0, bgPaint);
     }
-
-
     /**
      * 绘制按钮
      *
@@ -220,12 +225,13 @@ public class LayerView extends View implements ViewTreeObserver.OnGlobalLayoutLi
         float top = fontMetrics.top;//为基线到字体上边框的距离,即上图中的top
         float bottom = fontMetrics.bottom;//为基线到字体下边框的距离,即上图中的bottom
         int baseLineY = (int) (rectF.centerY() - top / 2 - bottom / 2);//基线中间点的y轴计算公式
-        canvas.drawText("朕知道了", rectF.centerX(), baseLineY, btPaint);
+        canvas.drawText("我知道了。", rectF.centerX(), baseLineY, btPaint);
     }
 
 
     @Override
     public void onGlobalLayout() {
+        //获取View位置，根据位置，设置透明区域的RectF
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             cView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
         } else {
@@ -240,7 +246,7 @@ public class LayerView extends View implements ViewTreeObserver.OnGlobalLayoutLi
         cRectF.right = cRectF.left + cView.getWidth();
         cRectF.bottom = cRectF.top + cView.getHeight();
 
-//        this.parent = findSuitableParent(cView);
+        //获取window中的最外侧的View。用于添加LayerView
         this.parent = (FrameLayout) mActivity.getWindow().getDecorView();
 
         show();
@@ -248,6 +254,7 @@ public class LayerView extends View implements ViewTreeObserver.OnGlobalLayoutLi
     }
 
     public void initshow() {
+        //调用，监听View的生成状况
         cView.getViewTreeObserver().addOnGlobalLayoutListener(this);
 
     }
@@ -296,6 +303,7 @@ public class LayerView extends View implements ViewTreeObserver.OnGlobalLayoutLi
 
         public Builder setContent(View view) {
             this.cView = view;
+            Log.d(TAG, "setContent: "+view.getX());
             return this;
         }
 

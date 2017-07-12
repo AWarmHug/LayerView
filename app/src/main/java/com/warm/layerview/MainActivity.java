@@ -7,6 +7,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -41,6 +42,12 @@ public class MainActivity extends AppCompatActivity {
         rv.setLayoutManager(new LinearLayoutManager(this));
 
 
+        rv.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                Log.d(TAG, "onFocusChange: " + hasFocus);
+            }
+        });
 
 
         //推荐先弹一个弹框询问是否需要看。
@@ -50,11 +57,12 @@ public class MainActivity extends AppCompatActivity {
                 .setPositiveButton("好的", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+
                         layerView = new LayerView.Builder(MainActivity.this)
                                 .setLayerColor(Color.parseColor("#75000000"))
                                 .setTextColor(Color.WHITE)
-                                .setContent(rv.getLayoutManager().findViewByPosition(0))
-//                                .setContent(tv)
+//                                .setContent(rv.getLayoutManager().findViewByPosition(0))
+                                .setContent(tv)
                                 .build();
                         layerView.initshow();
                         layerView.setOnClickListener(new View.OnClickListener() {
@@ -68,7 +76,6 @@ public class MainActivity extends AppCompatActivity {
                 .setNegativeButton("不用", null)
                 .create();
         dialog.show();
-
     }
 //    private boolean show;
 //    @Override

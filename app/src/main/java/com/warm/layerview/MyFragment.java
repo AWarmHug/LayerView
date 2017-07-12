@@ -27,7 +27,7 @@ public class MyFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        return inflater.inflate(R.layout.fragment_my,container,false);
+        return inflater.inflate(R.layout.fragment_my, container, false);
     }
 
     @Override
@@ -45,7 +45,7 @@ public class MyFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         //推荐先弹一个弹框询问是否需要看。
-        AlertDialog dialog=new AlertDialog.Builder(getContext())
+        AlertDialog dialog = new AlertDialog.Builder(getContext())
                 .setTitle("提示")
                 .setMessage("我们增加了一些新功能，欢迎查看！")
                 .setPositiveButton("好的", new DialogInterface.OnClickListener() {
@@ -54,8 +54,8 @@ public class MyFragment extends Fragment {
                         layerView = new LayerView.Builder(getContext())
                                 .setLayerColor(Color.parseColor("#75000000"))
                                 .setTextColor(Color.WHITE)
-//                .setContent(rv.getLayoutManager().findViewByPosition(0))
-                                .setContent(tv)
+                                .setContent(rv.getLayoutManager().findViewByPosition(0))
+//                                .setContent(tv)
                                 .build();
                         layerView.initshow();
                         layerView.setOnClickListener(new View.OnClickListener() {
@@ -66,7 +66,7 @@ public class MyFragment extends Fragment {
                         });
                     }
                 })
-                .setNegativeButton("不用",null)
+                .setNegativeButton("不用", null)
                 .create();
         dialog.show();
     }

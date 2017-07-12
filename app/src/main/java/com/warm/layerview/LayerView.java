@@ -31,6 +31,9 @@ public class LayerView extends View implements ViewTreeObserver.OnGlobalLayoutLi
     private Context mContext;
     private Activity mActivity;
     private ViewGroup parent;
+    /**
+     * 当前显示的View
+     */
     private View cView;
     private int layerColor = Color.parseColor("#75000000");
     private int textColor = Color.WHITE;
@@ -74,6 +77,7 @@ public class LayerView extends View implements ViewTreeObserver.OnGlobalLayoutLi
             this.cRectF = builder.cRect;
         }
         init(context, attrs, defStyleAttr);
+
     }
 
 
@@ -237,6 +241,14 @@ public class LayerView extends View implements ViewTreeObserver.OnGlobalLayoutLi
         } else {
             cView.getViewTreeObserver().removeGlobalOnLayoutListener(this);
         }
+        showLocation();
+        Log.d(TAG, "onGlobalLayout: ");
+    }
+
+    /**
+     * 获取View的位置，显示
+     */
+    private void showLocation() {
         int[] location = new int[2];
 
         cView.getLocationInWindow(location);
@@ -250,12 +262,21 @@ public class LayerView extends View implements ViewTreeObserver.OnGlobalLayoutLi
         this.parent = (FrameLayout) mActivity.getWindow().getDecorView();
 
         show();
-        Log.d(TAG, "onGlobalLayout: ");
     }
 
     public void initshow() {
         //调用，监听View的生成状况
-        cView.getViewTreeObserver().addOnGlobalLayoutListener(this);
+
+        Log.d(TAG, "initshow: isShown="+cView.isShown());
+        Log.d(TAG, "initshow: isActivated="+cView.isActivated());
+
+        if (!cView.isShown()) {
+            cView.getViewTreeObserver().addOnGlobalLayoutListener(this);
+
+        }else {
+            showLocation();
+        }
+
 
     }
 
@@ -302,10 +323,11 @@ public class LayerView extends View implements ViewTreeObserver.OnGlobalLayoutLi
         }
 
         public Builder setContent(View view) {
-            this.cView = view;
-            Log.d(TAG, "setContent: "+view.getX());
+            this.cView=view;
+            Log.d(TAG, "setContent: "+view);
             return this;
         }
+
 
         public Builder setContent(Rect cRect) {
             this.cRect = cRect;

@@ -54,7 +54,7 @@ public class MyFragment extends Fragment {
                         layerView = new LayerView.Builder(getContext())
                                 .setLayerColor(Color.parseColor("#75000000"))
                                 .setTextColor(Color.WHITE)
-                                .setContent(rv.getLayoutManager().findViewByPosition(0))
+                                .setContent(rv.getLayoutManager().findViewByPosition(15))
 //                                .setContent(tv)
                                 .build();
                         layerView.initshow();

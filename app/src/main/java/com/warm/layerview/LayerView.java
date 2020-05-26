@@ -269,6 +269,9 @@ public class LayerView extends View implements ViewTreeObserver.OnGlobalLayoutLi
 
         Log.d(TAG, "initshow: isShown="+cView.isShown());
         Log.d(TAG, "initshow: isActivated="+cView.isActivated());
+        if (cView==null){
+            return;
+        }
 
         if (!cView.isShown()) {
             cView.getViewTreeObserver().addOnGlobalLayoutListener(this);

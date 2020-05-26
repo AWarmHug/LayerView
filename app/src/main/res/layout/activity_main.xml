@@ -7,24 +7,19 @@
     android:orientation="vertical"
     tools:context="com.warm.layerview.MainActivity">
 
-
-
-
-        <TextView
-            android:id="@+id/tv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="点我显示Fragment!"
-            android:layout_centerHorizontal="true"
-            />
+    <Button
+        android:id="@+id/tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:text="点我显示Fragment!" />
 
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/tv"
-        >
+        android:layout_below="@+id/tv">
 
     </android.support.v7.widget.RecyclerView>
 

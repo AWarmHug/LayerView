@@ -51,51 +51,51 @@ public class MainActivity extends AppCompatActivity {
 
 
         //推荐先弹一个弹框询问是否需要看。
-        AlertDialog dialog = new AlertDialog.Builder(this)
-                .setTitle("提示")
-                .setMessage("我们增加了一些新功能，欢迎查看！")
-                .setPositiveButton("好的", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-
-                        layerView = new LayerView.Builder(MainActivity.this)
-                                .setLayerColor(Color.parseColor("#75000000"))
-                                .setTextColor(Color.WHITE)
-//                                .setContent(rv.getLayoutManager().findViewByPosition(0))
-                                .setContent(tv)
-                                .build();
-                        layerView.initshow();
-                        layerView.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                layerView.dismiss();
-                            }
-                        });
-                    }
-                })
-                .setNegativeButton("不用", null)
-                .create();
-        dialog.show();
+//        AlertDialog dialog = new AlertDialog.Builder(this)
+//                .setTitle("提示")
+//                .setMessage("我们增加了一些新功能，欢迎查看！")
+//                .setPositiveButton("好的", new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//
+//                        layerView = new LayerView.Builder(MainActivity.this)
+//                                .setLayerColor(Color.parseColor("#75000000"))
+//                                .setTextColor(Color.WHITE)
+////                                .setContent(rv.getLayoutManager().findViewByPosition(0))
+//                                .setContent(tv)
+//                                .build();
+//                        layerView.initshow();
+//                        layerView.setOnClickListener(new View.OnClickListener() {
+//                            @Override
+//                            public void onClick(View v) {
+//                                layerView.dismiss();
+//                            }
+//                        });
+//                    }
+//                })
+//                .setNegativeButton("不用", null)
+//                .create();
+//        dialog.show();
     }
-//    private boolean show;
-//    @Override
-//    public void onWindowFocusChanged(boolean hasFocus) {
-//        super.onWindowFocusChanged(hasFocus);
-//        if (hasFocus&&!show){
-//            show=true;
-//            layerView = new LayerView.Builder(MainActivity.this)
-//                    .setLayerColor(Color.parseColor("#75000000"))
-//                    .setTextColor(Color.WHITE)
-////                .setContent(rv.getLayoutManager().findViewByPosition(0))
-//                    .setContent(tv)
-//                    .build();
-//            layerView.initshow();
-//            layerView.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    layerView.dismiss();
-//                }
-//            });
-//        }
-//    }
+    private boolean show;
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if (hasFocus&&!show){
+            show=true;
+            layerView = new LayerView.Builder(MainActivity.this)
+                    .setLayerColor(Color.parseColor("#75000000"))
+                    .setTextColor(Color.WHITE)
+//                .setContent(rv.getLayoutManager().findViewByPosition(0))
+                    .setContent(tv)
+                    .build();
+            layerView.initshow();
+            layerView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    layerView.dismiss();
+                }
+            });
+        }
+    }
 }

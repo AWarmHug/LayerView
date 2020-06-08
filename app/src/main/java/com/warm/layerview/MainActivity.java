@@ -1,18 +1,18 @@
 package com.warm.layerview;
 
-import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity111";
+    private Toolbar toolbar;
     private TextView tv;
     private RecyclerView rv;
     private LayerView layerView;
@@ -21,7 +21,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        toolbar = (Toolbar) this.findViewById(R.id.toolbar);
+        toolbar.inflateMenu(R.menu.tb_menu);
         tv = (TextView) this.findViewById(R.id.tv);
         tv.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -77,17 +78,19 @@ public class MainActivity extends AppCompatActivity {
 //                .create();
 //        dialog.show();
     }
+
     private boolean show;
+
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
-        if (hasFocus&&!show){
-            show=true;
+        if (hasFocus && !show) {
+            show = true;
             layerView = new LayerView.Builder(MainActivity.this)
                     .setLayerColor(Color.parseColor("#75000000"))
                     .setTextColor(Color.WHITE)
 //                .setContent(rv.getLayoutManager().findViewByPosition(0))
-                    .setContent(tv)
+                    .setContent(toolbar.findViewById(toolbar.getMenu().getItem(0).getItemId()))
                     .build();
             layerView.initshow();
             layerView.setOnClickListener(new View.OnClickListener() {

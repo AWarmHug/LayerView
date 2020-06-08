@@ -8,4 +8,10 @@
         app:showAsAction="always"
 
         />
+    <item
+        android:id="@+id/meun_tb2"
+        android:title="分享2"
+        app:showAsAction="always"
+
+        />
 </menu>
